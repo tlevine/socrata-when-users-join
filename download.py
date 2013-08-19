@@ -2,6 +2,7 @@
 import os
 import re
 import datetime
+from time import sleep
 from urllib import urlretrieve
 
 def get(url, cachedir = 'cache'):
@@ -42,24 +43,42 @@ def series(portal, start, end, slice = 'DAILY'):
     }
     return get(url % params)
 
-portals = [
-    'data.austintexas.gov',
-    'data.cityofnewyork.us',
-    'data.hawaii.gov',
-    'explore.data.gov',
-    'bronx.lehman.cuny.edu',
-    'data.sfgov.org',
-    'data.baltimorecity.gov',
-    'data.oregon.gov',
-    'data.raleighnc.gov',
-    'finances.worldbank.org',
-    'data.ok.gov',
-    'data.seattle.gov',
-    'data.montgomerycountymd.gov',
-]
-
-if __name__ == '__main__':
+def download():
     start = datetime.datetime(2008,1,1)
     end = datetime.datetime.fromordinal(datetime.date.today().toordinal() - 1)
+    portals = [
+        'data.austintexas.gov',
+        'data.cityofnewyork.us',
+        'data.hawaii.gov',
+        'explore.data.gov',
+        'bronx.lehman.cuny.edu',
+        'data.sfgov.org',
+        'data.baltimorecity.gov',
+        'data.oregon.gov',
+        'data.raleighnc.gov',
+        'finances.worldbank.org',
+        'data.ok.gov',
+        'data.seattle.gov',
+        'data.montgomerycountymd.gov',
+    ]
+
+    # Go through them once to load everything from Socrata's cold storage
     for portal in portals:
-        series(portal, start, end)
+        try:
+            series(portal, start, end)
+        except IOError:
+            pass
+
+    # Go through them again now that everything is in Socrata's hot storage
+    portals = set(portals)
+    while len(portals) > 0:
+        portal = list(portals)[0]
+        try:
+            series(portal, start, end)
+        except IOError:
+            sleep(10)
+        else:
+            portals.remove(portal)
+
+if __name__ == '__main__':
+    download()
