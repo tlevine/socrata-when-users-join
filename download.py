@@ -21,7 +21,6 @@ def get(url, cachedir = 'cache'):
     # Download
     if not os.path.exists(local_file):
        print 'Downloading and saving %s' % url
-       print local_file
        urlretrieve(url, filename = local_file)
 
     return open(local_file).read()
@@ -35,7 +34,7 @@ def series(portal, start, end, slice = 'DAILY'):
     if slice not in slices:
         raise TypeError('slice must be one of ' % ', '.join(slices))
 
-    url = '%(portal)s/api/site_metrics.json?start=%(start)s&end=%(end)s&method=series&slice=%(slice)s'
+    url = 'https://%(portal)s/api/site_metrics.json?start=%(start)s&end=%(end)s&method=series&slice=%(slice)s'
     params = {
         'portal': portal,
         'start': start.strftime('%s') + '000',
@@ -68,7 +67,6 @@ def download():
         try:
             series(portal, start, end)
         except IOError:
-            raise
             pass
 
     # Go through them again now that everything is in Socrata's hot storage
