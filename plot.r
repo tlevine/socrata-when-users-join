@@ -4,6 +4,7 @@ library(ggplot2)
 if (!('series' %in% ls())) {
   series <- sqldf('SELECT * FROM series;', dbname = 'metrics.db')
   names(series) <- sapply(names(series), function(x) { gsub('-', '.', x)})
+  series$date <- as.Date(series$date)
 }
 
 if (!('series.zero' %in% ls())) {
