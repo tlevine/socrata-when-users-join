@@ -64,21 +64,7 @@ def download():
 
     # Go through them once to load everything from Socrata's cold storage
     for portal in portals:
-        try:
-            series(portal, start, end)
-        except IOError:
-            pass
-
-    # Go through them again now that everything is in Socrata's hot storage
-    portals = set(portals)
-    while len(portals) > 0:
-        portal = list(portals)[0]
-        try:
-            series(portal, start, end)
-        except IOError:
-            sleep(10)
-        else:
-            portals.remove(portal)
+        series(portal, start, end)
 
 if __name__ == '__main__':
     download()
