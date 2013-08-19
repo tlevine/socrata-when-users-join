@@ -33,7 +33,7 @@ def series(portal, start, end, slice = 'DAILY'):
     if slice not in slices:
         raise TypeError('slice must be one of ' % ', '.join(slices))
 
-    url = 'https://%(portal)s/api/site_metrics.json?start=%(start)s&end=%(end)s%method=series&slice=%(slice)s'
+    url = '%(portal)s/api/site_metrics.json?start=%(start)s&end=%(end)s&method=series&slice=%(slice)s'
     params = {
         'portal': portal,
         'start': start.strftime('%s') + '000',
