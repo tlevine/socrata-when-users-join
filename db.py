@@ -3,19 +3,27 @@ import os, datetime, json
 from download import series
 from dumptruck import DumpTruck
 
-dt = DumpTruck(dbname = 'metrics.db')
-dt.create_table({'portal': 'abc', 'date': datetime.date.today()}, 'series')
-dt.create_index(['portal', 'date'], 'series')
-
-def main():
+def table():
     start = datetime.datetime(2008, 1, 1)
     end   = datetime.datetime(2013, 8, 18)
     portals = os.listdir('cache')
     for portal in portals:
-        dt.upsert(mapper(portal))
+        days = json.load(series(portal, start, end))
+        for day in days:
+            if 'metrics' not in day:
+                day['metrics'] = {}
 
-def mapper(portal):
-    data = json.load(series(portal, start, end))
-    data['portal'] = portal
-    data['metrics']['date'] = datetime.datetime.fromtimestamp(data[-1]['__start__'] / 1000).date()
-    return data['metrics']
+            day['metrics']['portal'] = portal
+            day['metrics']['date'] = datetime.datetime.fromtimestamp(
+                day['__start__'] / 1000).date()
+
+            yield day['metrics']
+
+def main():
+    dt = DumpTruck(dbname = 'metrics.db')
+    dt.create_table({'portal': 'abc', 'date': datetime.date.today()}, 'series')
+    dt.create_index(['portal', 'date'], 'series')
+    dt.upsert(list(table()), 'series')
+
+if __name__ == '__main__':
+    main()
