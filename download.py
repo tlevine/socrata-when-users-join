@@ -42,5 +42,24 @@ def series(portal, start, end, slice = 'DAILY'):
     }
     return get(url % params)
 
-# https://data.oregon.gov/api/site_metrics.json?start=1375315200000&end=1376438399999&method=series&slice=WEEKLY
-series('data.oregon.gov', datetime.datetime(2013,8,1), datetime.datetime(2013,8,10))
+portals = [
+    'data.austintexas.gov',
+    'data.cityofnewyork.us',
+    'data.hawaii.gov',
+    'explore.data.gov',
+    'bronx.lehman.cuny.edu',
+    'data.sfgov.org',
+    'data.baltimorecity.gov',
+    'data.oregon.gov',
+    'data.raleighnc.gov',
+    'finances.worldbank.org',
+    'data.ok.gov',
+    'data.seattle.gov',
+    'data.montgomerycountymd.gov',
+]
+
+if __name__ == '__main__':
+    start = datetime.datetime(2008,1,1)
+    end = datetime.datetime.fromordinal(datetime.date.today().toordinal() - 1)
+    for portal in portals:
+        series(portal, start, end)
