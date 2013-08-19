@@ -23,7 +23,7 @@ def get(url, cachedir = 'cache'):
        print 'Downloading and saving %s' % url
        urlretrieve(url, filename = local_file)
 
-    return open(local_file).read()
+    return open(local_file)
 
 def series(portal, start, end, slice = 'DAILY'):
     for date in [start, end]:
