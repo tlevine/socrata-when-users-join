@@ -21,6 +21,7 @@ def get(url, cachedir = 'cache'):
     # Download
     if not os.path.exists(local_file):
        print 'Downloading and saving %s' % url
+       print local_file
        urlretrieve(url, filename = local_file)
 
     return open(local_file).read()
@@ -67,6 +68,7 @@ def download():
         try:
             series(portal, start, end)
         except IOError:
+            raise
             pass
 
     # Go through them again now that everything is in Socrata's hot storage
