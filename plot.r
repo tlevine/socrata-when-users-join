@@ -2,7 +2,7 @@ library(sqldf)
 library(ggplot2)
 
 if (!('series' %in% ls())) {
-  series <- sqldf('SELECT * FROM "series" WHERE "date" >= \'2010-01-01\' ;', dbname = 'metrics.db')
+  series <- sqldf('SELECT * FROM "series" WHERE "date" >= \'2010-06-01\' ;', dbname = 'metrics.db')
   names(series) <- sapply(names(series), function(x) { gsub('-', '.', x)})
   series$date <- as.Date(series$date)
 }
