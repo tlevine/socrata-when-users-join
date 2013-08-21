@@ -1,22 +1,16 @@
 (function(){
   d3.csv('series.csv', makePlot)
   function makePlot(table) {
-    table = table.map(convertTypes)
-    
-    // http://bl.ocks.org/benjchristensen/2579599
+    tables = separatePortals(table.map(convertTypes))
 
-    // define dimensions of graph
     var m = [80, 80, 80, 80]; // margins
     var w = 1840 - m[1] - m[3]; // width
     var h = 480 - m[0] - m[2]; // height
-
     var minDate = table[0].date
     var maxDate = table[table.length - 1].date
-
     var x = d3.time.scale().domain([minDate, maxDate]).range([0, w]).nice(d3.time.day)
     var y = d3.scale.linear().domain([0, 1000]).range([h, 0]);
 
-    // create a line function that can convert data[] into x and y points
     var line = d3.svg.line()
       .x(function(d) { 
         return x(d.date); 
@@ -25,33 +19,31 @@
         return y(d['users-created']); 
       })
 
-    // Add an SVG element with the desired dimensions and margin.
+    // Based on http://bl.ocks.org/benjchristensen/2579599
     var graph = d3.select("#graph").append("svg:svg")
         .attr("width", w + m[1] + m[3])
         .attr("height", h + m[0] + m[2])
       .append("svg:g")
         .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-    // create yAxis
     var xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(true);
-    // Add the x-axis.
     graph.append("svg:g")
-          .attr("class", "x axis")
-          .attr("transform", "translate(0," + h + ")")
-          .call(xAxis);
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + h + ")")
+      .call(xAxis);
 
-
-    // create left yAxis
     var yAxisLeft = d3.svg.axis().scale(y).ticks(4).orient("left");
-    // Add the y-axis to the left
     graph.append("svg:g")
-          .attr("class", "y axis")
-          .attr("transform", "translate(-25,0)")
-          .call(yAxisLeft);
-    
-    // Add the line by appending an svg:path element with the data line we created above
-    // do this AFTER the axes above so that the line is above the tick-lines
-    graph.append("svg:path").attr("d", line(table));
+      .attr("class", "y axis")
+      .attr("transform", "translate(-25,0)")
+      .call(yAxisLeft);
+
+    for (portal in tables) {
+      graph.append("svg:path")
+        .attr("d", line(tables[portal]))
+        .attr("class", portal)
+    }
+
 
     function convertTypes(row){
       var date = new Date()
@@ -64,6 +56,16 @@
       date.setSeconds(0)
       row.date = date
       return row
+    }
+
+    function separatePortals(table){
+      var result = {}
+      while (table.length > 0) {
+        var row = table.pop()
+        if (!(row.portal in result)) result[row.portal] = []
+        result[row.portal].push(row)
+      }
+      return result
     }
   }
 })()
