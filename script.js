@@ -38,6 +38,11 @@
       .attr("transform", "translate(-25,0)")
       .call(yAxisLeft);
 
+    var figure = graph.append("svg:text")
+      .classed("figure", true)
+      .classed("hide", true)
+      .text('abc')
+
     for (portal in tables) {
       graph.append("svg:path")
         .attr("d", line(tables[portal]))
@@ -45,9 +50,12 @@
         .classed(portal, true)
     }
     graph.selectAll('path.line').on('mouseover', function(d, i) {
+      var xy = d3.mouse(this)
+      graph.select('.figure').attr('dx', xy[0]).attr('dy', xy[1]).classed('hide', false)
       d3.select(this).classed('hover', true)
     })
     graph.selectAll('path.line').on('mouseout', function(d, i) {
+      graph.select('.figure').classed('hide', true)
       d3.select(this).classed('hover', false)
     })
 
