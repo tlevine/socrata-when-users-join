@@ -4,8 +4,8 @@
     tables = separatePortals(table.map(convertTypes))
 
     var m = [80, 80, 80, 80]; // margins
-    var w = 1840 - m[1] - m[3]; // width
-    var h = 480 - m[0] - m[2]; // height
+    var w = 1600 - m[1] - m[3]; // width
+    var h = 800 - m[0] - m[2]; // height
     var minDate = table[0].date
     var maxDate = table[table.length - 1].date
     var x = d3.time.scale().domain([minDate, maxDate]).range([0, w]).nice(d3.time.day)
@@ -41,8 +41,15 @@
     for (portal in tables) {
       graph.append("svg:path")
         .attr("d", line(tables[portal]))
-        .attr("class", portal)
+        .classed("line", true)
+        .classed(portal, true)
     }
+    graph.selectAll('path.line').on('mouseover', function(d, i) {
+      d3.select(this).classed('hover', true)
+    })
+    graph.selectAll('path.line').on('mouseout', function(d, i) {
+      d3.select(this).classed('hover', false)
+    })
 
 
     function convertTypes(row){
