@@ -1,4 +1,7 @@
-  d3.csv('series.csv',
+(function(){
+  window.onload = function(){
+    d3.csv('series.csv', makePlot)
+  }
   
   function separatePortals(full_table){
     var result = {}
@@ -8,4 +11,10 @@
       result[row.portal].push(row)
     }
     return result
-  })
+  }
+
+  function makePlot(table) {
+    var portals = separatePortals(table)
+  }
+
+})()
