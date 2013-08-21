@@ -7,7 +7,7 @@
 
     // define dimensions of graph
     var m = [80, 80, 80, 80]; // margins
-    var w = 840 - m[1] - m[3]; // width
+    var w = 1840 - m[1] - m[3]; // width
     var h = 480 - m[0] - m[2]; // height
 
     var minDate = table[0].date
@@ -18,13 +18,11 @@
 
     // create a line function that can convert data[] into x and y points
     var line = d3.svg.line()
-      .x(function(d,i) { 
-        console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
-        return x(i); 
+      .x(function(d) { 
+        return x(d.date); 
       })
       .y(function(d) { 
-        console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
-        return y(d); 
+        return y(d['users-created']); 
       })
 
     // Add an SVG element with the desired dimensions and margin.
