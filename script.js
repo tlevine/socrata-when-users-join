@@ -43,12 +43,17 @@
       .classed("hide", true)
       .text('abc')
 
+    var table_zip = []
     for (portal in tables) {
-      graph.append("svg:path")
-        .attr("d", line(tables[portal]))
-        .classed("line", true)
-        .classed(portal, true)
+      table_zip.push([portal, tables[portal]])
     }
+    graph.selectAll('path')
+      .data(table_zip)
+      .enter()
+      .append("path")
+      .attr("d", function(d, i) { return line(d[1]) })
+      .classed("line", true)
+
     graph.selectAll('path.line').on('mouseover', function(d, i) {
       var xy = d3.mouse(this)
       graph.select('.figure').attr('dx', xy[0]).attr('dy', xy[1]).classed('hide', false)
