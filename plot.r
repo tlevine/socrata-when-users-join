@@ -15,6 +15,11 @@ if (!('series.zero' %in% ls())) {
     c('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'))
 }
 
+if (!('bytes' %in% ls())) {
+  bytes <- melt(series.zero[c('date', 'portal', 'bytes.in', 'bytes.out')], c('date', 'portal'),
+    variable.name = 'direction', value.name = 'bytes')
+}
+
 p1 <- ggplot(series.zero) +
   aes(x = date, y = users.created, group = portal, color = portal) +
   scale_x_date('Date') + scale_y_log10('Users created today') +
@@ -27,7 +32,6 @@ p1 <- ggplot(series.zero) +
 # Facet
 p3 <- p1 + facet_wrap(~ portal)
 
-
 # Day of week
 p4 <- ggplot(series.zero) + aes(x = day.of.week) + geom_histogram() +
   scale_y_continuous('Number of users added on this day of the week') +
@@ -35,3 +39,23 @@ p4 <- ggplot(series.zero) + aes(x = day.of.week) + geom_histogram() +
   ggtitle('Day of the week doesn\'t tell us much.')
 
 # Notable events, like hackathons, legislation
+
+
+
+
+
+p5 <- ggplot(series.zero) + aes(x = bytes.in, y = bytes.out) + geom_path()
+
+
+p6 <- ggplot(bytes) + aes(x = date, group = direction, y = bytes) +
+  facet_wrap(~ portal) + geom_line()
+
+
+# sum(series.zero$bytes.out < 0)
+# [1] 2051
+# sum(series.zero$bytes.in < 0)
+# [1] 1
+
+# subset(series.zero, bytes.in < 0)
+# subset(series.zero, bytes.out < 0)[1:10,c('date','portal','page.views','bytes.out','bytes.in','disk.usage')]
+
