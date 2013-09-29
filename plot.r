@@ -1,5 +1,7 @@
 library(sqldf)
 library(ggplot2)
+library(MASS)
+library(reshape2)
 
 if (!('series' %in% ls())) {
   series <- sqldf('SELECT * FROM "series" WHERE "date" >= \'2010-06-01\' ;', dbname = 'metrics.db')
@@ -13,6 +15,7 @@ if (!('series.zero' %in% ls())) {
   series.zero[1:nrow(series),] <- as.data.frame(series.zero)
   series.zero$day.of.week <- factor(strftime(series.zero$date, '%a'),
     c('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'))
+  series.zero <- subset(series.zero, disk.usage > 0)
 }
 
 if (!('bytes' %in% ls())) {
@@ -59,3 +62,16 @@ p6 <- ggplot(bytes) + aes(x = date, group = direction, y = bytes) +
 # subset(series.zero, bytes.in < 0)
 # subset(series.zero, bytes.out < 0)[1:10,c('date','portal','page.views','bytes.out','bytes.in','disk.usage')]
 
+# Not interesting
+# b <- princomp(subset(series.zero,portal=='explore.data.gov')[c('page.views','bytes.out','bytes.in','disk.usage')], cor = TRUE)
+
+plot.bytes <- function() {
+  series.bytes <- subset(series.zero, bytes.out > 0 & bytes.in > 0)
+  m <- rlm(log(bytes.in) ~ log(bytes.out) + portal, data = series.bytes)
+  plot(m$residuals ~ series.bytes$date,
+    col = as.numeric(factor(series.bytes$portal)))
+}
+
+p7 <- ggplot(series.zero) + aes(x = date, y = page.views) +
+  facet_wrap(~ portal) + geom_line() +
+  scale_y_log10('Page views')
